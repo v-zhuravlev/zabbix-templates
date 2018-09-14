@@ -1,0 +1,43 @@
+sudo: required
+
+services:
+  - docker
+
+language: python
+
+env:
+  - ZABBIX_VERSION=3.4
+before_install:
+  - python -m pip install py-zabbix
+  - pushd tests/docker && docker-compose up -d
+  - popd
+  - pushd bin
+  - while ! python check-api.py; do sleep 5; done
+  - popd
+
+install: true  
+
+
+script:
+  - pushd bin
+  - ./import-templates.py '../ICMP'
+  - ./import-templates.py '../MIB/F5-BIGIP-LOCAL-MIB'
+  - ./import-templates.py '../MIB/F5-BIGIP-SYSTEM-MIB'
+  - ./import-templates.py '../MIB/IF-MIB'
+  - ./import-templates.py '../MIB/IP-MIB'
+  - ./import-templates.py '../MIB/SNMP-MPD-MIB' 
+  - ./import-templates.py '../MIB/SNMP-USER-BASED-SM-MIB'
+  - ./import-templates.py '../MIB/SNMP-VIEW-BASED-ACM-MIB' 
+  - ./import-templates.py '../MIB/SNMPv2-MIB'
+  - ./import-templates.py '../MIB/UDP-MIB'
+  - ./import-templates.py '../OS Linux'
+  - ./import-templates.py '../OS Solaris' 
+  - ./import-templates.py '../OS Windows'
+  - ./import-templates.py '../Service Apache'
+  - ./import-templates.py '../Service MySQL'
+  - ./import-templates.py '../Service Nginx'
+  - ./import-templates.py '../Service Zabbix Agent'
+  - ./import-templates.py '../Service Zabbix Proxy'
+  - ./import-templates.py '../Service Zabbix Server' 
+  - ./import-templates.py '../SNMP Devices/BIG-IP 5000'
+  - ./import-templates.py '../SNMP Devices/DSL-3782'
